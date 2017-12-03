@@ -1,5 +1,5 @@
-puts "enter captcha"
-captcha = gets.chomp
+captcha = File.read("day_1_input.txt").chomp
+puts captcha
 last_digit = captcha[-1]
 sum = 0
 captcha.split('').each do |digit|

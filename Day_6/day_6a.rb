@@ -8,27 +8,41 @@ def redistribute(banks)
   blocks_to_add_to_each_bank = total_blocks_to_redistribute / banks.count
   banks_that_get_extra_block = total_blocks_to_redistribute % banks.count
 
-  if banks.count - max_bank < banks_that_get_extra_block
+  if banks_that_get_extra_block == 0
+    after_ending_bank = max_bank
+    before_ending_bank = -1
+  elsif banks.count - 1 - max_bank < banks_that_get_extra_block
     after_ending_bank = banks.count - 1
     before_ending_bank = banks_that_get_extra_block - (banks.count - max_bank)
   else
     after_ending_bank = max_bank + banks_that_get_extra_block
-    before_ending_bank = 0
+    before_ending_bank = -1
   end
-  banks[max_bank] = 0
-  binding.pry
-  banks.map!.with_index do |bank, index|
+
+
+  new_banks = banks.map.with_index do |bank, index|
     if index <= before_ending_bank
       bank += blocks_to_add_to_each_bank + 1
-    elsif before_ending_bank < index && index <= max_bank
+    elsif before_ending_bank < index && index < max_bank
       bank += blocks_to_add_to_each_bank
+    elsif index == max_bank
+      bank = blocks_to_add_to_each_bank
     elsif max_bank < index && index <= after_ending_bank
       bank += blocks_to_add_to_each_bank + 1
+    else
+      bank += blocks_to_add_to_each_bank
     end
-    puts bank, index
+    bank
   end
-  binding.pry
 
-  return banks
+  return new_banks
 end
-binding.pry
+
+count = 0
+bank_combos = [banks]
+while (bank_combos.length == bank_combos.uniq.length)
+  current_banks = bank_combos.last
+  bank_combos.push(redistribute(current_banks))
+  count += 1
+end
+puts "count is #{count}"
